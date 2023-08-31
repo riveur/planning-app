@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserCreated;
 use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Group;
 use App\Models\Role;
+use Exception;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 
@@ -45,7 +49,21 @@ class UsersController extends Controller
         $data = Arr::only($request->validated(), ['firstname', 'lastname', 'email', 'group_id', 'role_id']);
         $data['password'] = Hash::make($tempPassword);
 
-        User::create($data);
+        DB::beginTransaction();
+
+        $user = User::create($data);
+
+        try {
+            UserCreated::dispatch($user, $tempPassword);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            return back()->withErrors([
+                'message' => 'Erreur lors de l\'envoi des informations à l\'utilisateur, réessayez plus tard.',
+            ]);
+        }
+
+        DB::commit();
 
         return redirect()->route('users.index');
     }

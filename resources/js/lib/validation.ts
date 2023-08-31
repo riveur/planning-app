@@ -19,6 +19,19 @@ export const RegisterValidation = UserValidation
     path: ['password_confirmation']
   });
 
+export const ForgotPasswordValidation = UserValidation.pick({ email: true });
+
+export const ResetPasswordValidation = UserValidation.pick({ email: true })
+  .extend({
+    password: z.string().min(1, 'Vous devez renseigner un mot de passe'),
+    password_confirmation: z.string().min(1, 'Vous devez renseigner un mot de passe'),
+    token: z.string().min(1, "Vous devez préciser le token")
+  })
+  .refine(({ password, password_confirmation }) => password === password_confirmation, {
+    message: 'Les mots de passes ne correspondent pas',
+    path: ['password_confirmation']
+  });
+
 export const RoleValidation = z.object({
   name: z.string().min(1, 'Vous devez préciser un nom').max(255),
   description: z.string().min(1, 'Vous devez préciser une description').max(255)
@@ -46,4 +59,6 @@ export type RoleValidationSchema = z.infer<typeof RoleValidation>;
 export type GroupValidationSchema = z.infer<typeof GroupValidation>;
 export type EventValidationSchema = z.infer<typeof EventValidation>;
 export type RegisterValidationSchema = z.infer<typeof RegisterValidation>;
+export type ForgotPasswordValidationSchema = z.infer<typeof ForgotPasswordValidation>;
+export type ResetPasswordValidationSchema = z.infer<typeof ResetPasswordValidation>;
 export type LoginValidationSchema = z.infer<typeof LoginValidation>;

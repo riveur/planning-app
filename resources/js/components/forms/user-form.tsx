@@ -28,6 +28,7 @@ export function UserForm({ user, roles = [], groups = [] }: { user?: User, roles
     if (serverErrors.email) form.setError('email', { message: serverErrors.email });
     if (serverErrors.role_id) form.setError('role_id', { message: serverErrors.role_id });
     if (serverErrors.group_id) form.setError('group_id', { message: serverErrors.group_id });
+    if (serverErrors.message) toast({ description: serverErrors.message, variant: 'destructive' })
   };
 
   const onSubmit: SubmitHandler<UserValidationSchema> = (data) => {

@@ -56,6 +56,7 @@ export function LoginForm() {
             </div>
             <div className="flex justify-between">
               <Link href="/register" className="text-sm text-blue-500 hover:text-blue-300">Pas de compte ?</Link>
+              <Link href="/forgot-password" className="text-sm text-blue-500 hover:text-blue-300">Mot de passe oublié ?</Link>
             </div>
           </div>
         </CardContent>
