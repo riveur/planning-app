@@ -25,6 +25,8 @@ class User extends Authenticatable
         'lastname',
         'email',
         'password',
+        'role_id',
+        'group_id'
     ];
 
     /**
@@ -45,6 +47,12 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * 
+     * @var array
+     */
+    protected $appends = ['fullname'];
 
     /**
      * Get the user's full name.

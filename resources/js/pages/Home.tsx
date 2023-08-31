@@ -1,4 +1,4 @@
-import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import { DashboardLayout, useDashboardLayout } from "@/components/layouts/dashboard-layout";
 import { AuthenticatedInertiaPage } from "@/types";
 import { usePage } from "@inertiajs/react";
 export default function Home() {
@@ -12,4 +12,4 @@ export default function Home() {
   );
 }
 
-Home.layout = (page: React.ReactNode) => <DashboardLayout children={page} title="Accueil" />;
+Home.layout = useDashboardLayout('Accueil');

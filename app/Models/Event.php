@@ -12,6 +12,18 @@ class Event extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'title',
+        'description',
+        'owner_id',
+        'formateur_id'
+    ];
+
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, foreignKey: 'owner_id');
