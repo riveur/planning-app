@@ -32,6 +32,11 @@ export function Header() {
                 <Link href="/roles" className={className(url.startsWith('/roles'))}>Rôles</Link>
               </Button>
             </li>
+            <li>
+              <Button variant="ghost" asChild>
+                <Link href="/calendar" className={className(url.startsWith('/calendar'))}>Calendrier</Link>
+              </Button>
+            </li>
           </ul>
         </nav></div>
       <UserNav username={user.fullname} />

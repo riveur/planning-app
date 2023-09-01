@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\GroupsController;
 use App\Http\Controllers\RolesController;
@@ -21,11 +22,13 @@ use Inertia\Inertia;
 */
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', function () {
-        return Inertia::render('Home', [
-            'events' => Event::all()
-        ]);
-    })->name('home');
+
+    Route::controller(DashboardController::class)
+        ->name('dashboard.')
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/calendar', 'calendar')->name('calendar');
+        });
 
     Route::controller(EventsController::class)
         ->prefix('events')

@@ -47,6 +47,10 @@ export type Schedule = {
   updated_at: string;
 };
 
+export type WithEvent = {
+  event: Event;
+};
+
 export type Event = {
   id: number;
   title: string;

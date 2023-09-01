@@ -1,5 +1,7 @@
 import { number, z } from "zod";
 
+const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+
 export const UserValidation = z.object({
   firstname: z.string().min(1, 'Vous devez renseigner un prénom').max(255),
   lastname: z.string().min(1, 'Vous devez renseigner un nom').max(255),
@@ -46,7 +48,16 @@ export const EventValidation = z.object({
   title: z.string().min(1, 'Vous devez préciser un titre').max(255),
   description: z.string().min(1, 'Vous devez préciser une description').max(255),
   formateur_id: z.string().regex(/^\d*$/, 'Valeur invalide').or(z.number()).nullable().optional().transform(v => v === '' ? null : v),
-  groups: z.array(z.object({ label: z.string(), value: z.number() }))
+  groups: z.array(z.object({ label: z.string(), value: z.number() })),
+});
+
+export const StoreEventValidation = EventValidation.extend({
+  start_date: z.date(),
+  end_date: z.date(),
+  start_morning_time: z.string().regex(timeRegex, 'Heure invalide'),
+  end_morning_time: z.string().regex(timeRegex, 'Heure invalide'),
+  start_afternoon_time: z.string().regex(timeRegex, 'Heure invalide'),
+  end_afternoon_time: z.string().regex(timeRegex, 'Heure invalide')
 });
 
 export const LoginValidation = z.object({
@@ -58,6 +69,7 @@ export type UserValidationSchema = z.infer<typeof UserValidation>;
 export type RoleValidationSchema = z.infer<typeof RoleValidation>;
 export type GroupValidationSchema = z.infer<typeof GroupValidation>;
 export type EventValidationSchema = z.infer<typeof EventValidation>;
+export type StoreEventValidationSchema = z.infer<typeof StoreEventValidation>;
 export type RegisterValidationSchema = z.infer<typeof RegisterValidation>;
 export type ForgotPasswordValidationSchema = z.infer<typeof ForgotPasswordValidation>;
 export type ResetPasswordValidationSchema = z.infer<typeof ResetPasswordValidation>;

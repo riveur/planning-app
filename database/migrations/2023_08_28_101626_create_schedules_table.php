@@ -20,7 +20,7 @@ class CreateSchedulesTable extends Migration
             $table->dateTime('end_morning_date');
             $table->dateTime('start_afternoon_date');
             $table->dateTime('end_afternoon_date');
-            $table->foreignId('event_id')->constrained();
+            $table->foreignId('event_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -6,7 +6,11 @@ use App\Models\Event;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Models\Group;
+use App\Models\Schedule;
 use App\Models\User;
+use Carbon\Carbon;
+use Carbon\CarbonInterface;
+use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Inertia\Inertia;
@@ -43,10 +47,35 @@ class EventsController extends Controller
      */
     public function store(StoreEventRequest $request)
     {
-        $data = Arr::only($request->validated(), ['title', 'description', 'formateur_id']);
+        $data = $request->only(['title', 'description', 'formateur_id']);
 
         /** @var \App\Models\Event $event */
         $event = Event::create($data + ['owner_id' => $request->user()->id]);
+
+        $startDate = new Carbon($request->validated('start_date'));
+        $endDate = new Carbon($request->validated('end_date'));
+
+        $startMorningTime = $request->validated('start_morning_time');
+        $endMorningTime = $request->validated('end_morning_time');
+        $startAfternoonTime = $request->validated('start_afternoon_time');
+        $endAfternoonTime = $request->validated('end_afternoon_time');
+
+        $periodes = CarbonPeriod::create($startDate->toDateString(), $endDate->toDateString());
+
+        $mappedSchedules = Arr::map(
+            $periodes->toArray(),
+            function (CarbonInterface $periode) use ($startMorningTime, $endMorningTime, $startAfternoonTime, $endAfternoonTime) {
+                return [
+                    'date' => $periode->toDateString(),
+                    'start_morning_date' => $periode->setTimeFromTimeString($startMorningTime)->toDateTimeString(),
+                    'end_morning_date' => $periode->setTimeFromTimeString($endMorningTime)->toDateTimeString(),
+                    'start_afternoon_date' => $periode->setTimeFromTimeString($startAfternoonTime)->toDateTimeString(),
+                    'end_afternoon_date' => $periode->setTimeFromTimeString($endAfternoonTime)->toDateTimeString(),
+                ];
+            }
+        );
+
+        $event->schedules()->createMany($mappedSchedules);
 
         if ($request->validated('groups')) {
             $event->groups()->attach($request->validated('groups'));
