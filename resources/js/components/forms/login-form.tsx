@@ -37,7 +37,7 @@ export function LoginForm() {
 
   return (
     <form method="post" onSubmit={handleSubmit(onSubmit)}>
-      <Card className="w-[400px]">
+      <Card className="sm:w-[400px]">
         <CardHeader>
           <CardTitle>Planning</CardTitle>
           <CardDescription>Connectez-vous pour démarrer la session.</CardDescription>
@@ -54,7 +54,7 @@ export function LoginForm() {
               <Input id="password" {...register('password')} type="password" />
               {errors.password && <span className="text-sm text-red-500">{errors.password.message}</span>}
             </div>
-            <div className="flex justify-between">
+            <div className="flex flex-col md:flex-row justify-between">
               <Link href="/register" className="text-sm text-blue-500 hover:text-blue-300">Pas de compte ?</Link>
               <Link href="/forgot-password" className="text-sm text-blue-500 hover:text-blue-300">Mot de passe oublié ?</Link>
             </div>

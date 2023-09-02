@@ -38,14 +38,14 @@ export function RegisterForm() {
 
   return (
     <form method="post" onSubmit={handleSubmit(onSubmit)}>
-      <Card className="w-[550px]">
+      <Card className="w-full sm:w-[550px]">
         <CardHeader>
           <CardTitle>Création de compte</CardTitle>
           <CardDescription>Renseignez vos informations.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid w-full items-center gap-4">
-            <div className="flex justify-between gap-4">
+            <div className="flex flex-col md:flex-row justify-between gap-4">
               <div className="flex flex-col space-y-1.5 w-full">
                 <Label htmlFor="lastname" className={cn(errors.lastname && 'text-red-500 font-bold')}>Nom</Label>
                 <Input id="lastname" type="text" {...register('lastname')} placeholder="Elon" />

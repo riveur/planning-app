@@ -6,8 +6,10 @@ export default function Login() {
   return (
     <>
       <Head title="Connexion" />
-      <main className="flex justify-center items-center h-screen w-full">
-        <LoginForm />
+      <main className="container mx-auto">
+        <div className="flex justify-center items-center h-screen w-full">
+          <LoginForm />
+        </div>
       </main>
       <Toaster />
     </>

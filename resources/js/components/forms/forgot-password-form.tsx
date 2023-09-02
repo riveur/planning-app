@@ -33,7 +33,7 @@ export function ForgotPasswordForm() {
   return (
     <Form {...form}>
       <form method="post" onSubmit={form.handleSubmit(onSubmit)}>
-        <Card className="w-[400px]">
+        <Card className="sm:w-[400px]">
           <CardHeader>
             <CardTitle>Mot de passe oublié</CardTitle>
             <CardDescription>Entrez votre email, pour recevoir les instructions pour réinitialiser votre mot de passe.</CardDescription>

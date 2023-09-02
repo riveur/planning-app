@@ -12,7 +12,7 @@ export function DashboardLayout({ children, title = 'Planning' }: { children: Re
       <div className="grid lg:grid-cols-7 h-[calc(100dvh-57px)]">
         <SideMenu className="hidden xl:block" />
         <main className="lg:col-span-7 xl:col-span-6 xl:border-l">
-          <div className="container mx-auto pt-4">
+          <div className="container mx-auto pt-8 pb-8">
             {children}
           </div>
         </main>

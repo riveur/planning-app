@@ -6,8 +6,10 @@ export default function ForgotPassword() {
   return (
     <>
       <Head title="Mot de passe oublié" />
-      <main className="flex justify-center items-center h-screen w-full">
-        <ForgotPasswordForm />
+      <main className="container mx-auto">
+        <div className="flex justify-center items-center h-screen w-full">
+          <ForgotPasswordForm />
+        </div>
       </main>
       <Toaster />
     </>
