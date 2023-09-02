@@ -62,7 +62,7 @@ export const StoreEventValidation = EventValidation.extend({
 
 export const LoginValidation = z.object({
   email: z.string().min(1, 'Vous devez renseigner votre mail').email('Email invalide').max(255),
-  password: z.string().min(1, 'Vous devez renseigner un nom d\'utilisateur').max(255)
+  password: z.string().min(1, 'Vous devez renseigner votre mot de passe').max(255)
 });
 
 export type UserValidationSchema = z.infer<typeof UserValidation>;
