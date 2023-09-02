@@ -23,6 +23,8 @@ class UsersController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', User::class);
+
         $users = User::all();
 
         return Inertia::render('Users/Index', compact('users'));
@@ -33,6 +35,8 @@ class UsersController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', User::class);
+
         $roles = Role::all(['id', 'name']);
         $groups = Group::all(['id', 'name']);
 
@@ -44,6 +48,8 @@ class UsersController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
+        $this->authorize('create', User::class);
+
         $tempPassword = Str::random(12);
 
         $data = Arr::only($request->validated(), ['firstname', 'lastname', 'email', 'group_id', 'role_id']);
@@ -75,6 +81,8 @@ class UsersController extends Controller
     {
         $user = User::query()->with(['role', 'group'])->findOrFail($id);
 
+        $this->authorize('view', $user);
+
         return Inertia::render('Users/Show', compact('user'));
     }
 
@@ -84,6 +92,8 @@ class UsersController extends Controller
     public function edit(int $id)
     {
         $user = User::find($id, ['id', 'firstname', 'lastname', 'email', 'group_id', 'role_id']);
+
+        $this->authorize('update', $user);
 
         $roles = Role::all(['id', 'name']);
         $groups = Group::all(['id', 'name']);
@@ -96,6 +106,8 @@ class UsersController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
+        $this->authorize('update', $user);
+
         $user->fill(Arr::only($request->validated(), ['firstname', 'lastname', 'email', 'group_id', 'role_id']));
         $user->save();
 
@@ -107,6 +119,8 @@ class UsersController extends Controller
      */
     public function destroy(User $user)
     {
+        $this->authorize('delete', $user);
+
         $user->delete();
 
         return redirect()->route('users.index');

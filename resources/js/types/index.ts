@@ -72,6 +72,12 @@ export interface AuthenticatedInertiaPage extends Page<PageProps> {
     errors: Errors & ErrorBag,
     auth: {
       user: User
+    },
+    can: {
+      viewAnyEvent: boolean,
+      viewAnyUser: boolean,
+      viewAnyGroup: boolean,
+      viewAnyRole: boolean
     }
   }
 };

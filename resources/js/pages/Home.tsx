@@ -14,7 +14,7 @@ export default function Home({
   scheduleOfDay,
   incomingSchedules
 }: {
-  scheduleOfDay: Schedule & WithEvent,
+  scheduleOfDay: Schedule & WithEvent | null,
   incomingSchedules: (Schedule & WithEvent)[]
 }) {
   return (
@@ -33,18 +33,22 @@ export default function Home({
                 plugins={[TimeGridPlugin]}
                 allDaySlot={false}
                 headerToolbar={false}
-                events={[
-                  {
-                    title: scheduleOfDay.event.title,
-                    start: new Date(scheduleOfDay.start_morning_date),
-                    end: new Date(scheduleOfDay.end_morning_date)
-                  },
-                  {
-                    title: scheduleOfDay.event.title,
-                    start: new Date(scheduleOfDay.start_afternoon_date),
-                    end: new Date(scheduleOfDay.end_afternoon_date)
-                  },
-                ]}
+                events={
+                  scheduleOfDay !== null ?
+                    [
+                      {
+                        title: scheduleOfDay.event.title,
+                        start: new Date(scheduleOfDay.start_morning_date),
+                        end: new Date(scheduleOfDay.end_morning_date)
+                      },
+                      {
+                        title: scheduleOfDay.event.title,
+                        start: new Date(scheduleOfDay.start_afternoon_date),
+                        end: new Date(scheduleOfDay.end_afternoon_date)
+                      },
+                    ] :
+                    []
+                }
                 initialView="timeGridOneDay"
                 views={{
                   timeGridOneDay: {

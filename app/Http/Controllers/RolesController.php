@@ -14,6 +14,8 @@ class RolesController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Role::class);
+
         $roles = Role::all();
 
         return Inertia::render('Roles/Index', compact('roles'));
@@ -24,6 +26,8 @@ class RolesController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Role::class);
+
         return Inertia::render('Roles/New');
     }
 
@@ -32,6 +36,8 @@ class RolesController extends Controller
      */
     public function store(StoreRoleRequest $request)
     {
+        $this->authorize('create', Role::class);
+
         Role::create($request->validated());
 
         return redirect()->route('roles.index');
@@ -42,6 +48,8 @@ class RolesController extends Controller
      */
     public function show(Role $role)
     {
+        $this->authorize('view', $role);
+
         return Inertia::render('Roles/Show', compact('role'));
     }
 
@@ -50,6 +58,8 @@ class RolesController extends Controller
      */
     public function edit(Role $role)
     {
+        $this->authorize('update', $role);
+
         return Inertia::render('Roles/Edit', compact('role'));
     }
 
@@ -58,6 +68,7 @@ class RolesController extends Controller
      */
     public function update(UpdateRoleRequest $request, Role $role)
     {
+        $this->authorize('update', $role);
 
         $role->fill($request->validated());
         $role->save();
@@ -70,6 +81,8 @@ class RolesController extends Controller
      */
     public function destroy(Role $role)
     {
+        $this->authorize('delete', $role);
+
         $role->delete();
 
         return redirect()->route('roles.index');

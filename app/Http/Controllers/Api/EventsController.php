@@ -16,12 +16,20 @@ class EventsController extends Controller
             'end' => ['required', 'date']
         ]);
 
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
         /** @var \Illuminate\Database\Eloquent\Collection|\App\Models\Schedule[] $schedules */
         $schedules = Schedule::with(['event'])
-            ->whereBetween('date', [$data['start'], $data['end']])
-            ->get();
+            ->whereBetween('date', [$data['start'], $data['end']]);
 
-        $schedules = $schedules->flatMap(function ($schedule) {
+        if (!$user->roleIs('admin')) {
+            $schedules = $schedules->whereHas('event.groups', function ($query) use ($user) {
+                return $query->where('id', '=', $user->group_id);
+            });
+        }
+
+        $schedules = $schedules->get()->flatMap(function ($schedule) {
             return [
                 [
                     'title' => $schedule->event->title,

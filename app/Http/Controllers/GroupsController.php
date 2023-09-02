@@ -14,6 +14,8 @@ class GroupsController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Group::class);
+
         $groups = Group::all();
 
         return Inertia::render('Groups/Index', compact('groups'));
@@ -24,6 +26,8 @@ class GroupsController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Group::class);
+
         return Inertia::render('Groups/New');
     }
 
@@ -32,6 +36,8 @@ class GroupsController extends Controller
      */
     public function store(StoreGroupRequest $request)
     {
+        $this->authorize('create', Group::class);
+
         Group::create($request->validated());
 
         return redirect()->route('groups.index');
@@ -42,6 +48,8 @@ class GroupsController extends Controller
      */
     public function show(Group $group)
     {
+        $this->authorize('view', $group);
+
         return Inertia::render('Groups/Show', compact('group'));
     }
 
@@ -50,6 +58,8 @@ class GroupsController extends Controller
      */
     public function edit(Group $group)
     {
+        $this->authorize('update', $group);
+
         return Inertia::render('Groups/Edit', compact('group'));
     }
 
@@ -58,6 +68,8 @@ class GroupsController extends Controller
      */
     public function update(UpdateGroupRequest $request, Group $group)
     {
+        $this->authorize('update', $group);
+
         $group->fill($request->validated());
         $group->save();
 
@@ -69,6 +81,8 @@ class GroupsController extends Controller
      */
     public function destroy(Group $group)
     {
+        $this->authorize('delete', $group);
+
         $group->delete();
 
         return redirect()->route('groups.index');

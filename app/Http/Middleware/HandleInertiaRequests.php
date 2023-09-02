@@ -39,6 +39,14 @@ class HandleInertiaRequests extends Middleware
                     'location' => $request->url(),
                 ]);
             },
+            'can' => function () use ($request) {
+                return $request->user() ? [
+                    'viewAnyEvent' => $request->user()->can('viewAny', 'App\\Models\\Event') ?? false,
+                    'viewAnyUser' => $request->user()->can('viewAny', 'App\\Models\\User') ?? false,
+                    'viewAnyGroup' => $request->user()->can('viewAny', 'App\\Models\\Group') ?? false,
+                    'viewAnyRole' => $request->user()->can('viewAny', 'App\\Models\\Role') ?? false,
+                ] : [];
+            }
         ]);
     }
 }

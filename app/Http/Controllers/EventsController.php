@@ -22,6 +22,8 @@ class EventsController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Event::class);
+
         $events = Event::all();
 
         return Inertia::render('Events/Index', compact('events'));
@@ -32,6 +34,8 @@ class EventsController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Event::class);
+
         $groups = Group::all(['id', 'name']);
         $formateurs = User::query()
             ->whereHas('role', function (Builder $query) {
@@ -47,6 +51,8 @@ class EventsController extends Controller
      */
     public function store(StoreEventRequest $request)
     {
+        $this->authorize('create', Event::class);
+
         $data = $request->only(['title', 'description', 'formateur_id']);
 
         /** @var \App\Models\Event $event */
@@ -89,6 +95,8 @@ class EventsController extends Controller
      */
     public function show(Event $event)
     {
+        $this->authorize('view', $event);
+
         return Inertia::render('Events/Show', compact('event'));
     }
 
@@ -98,6 +106,9 @@ class EventsController extends Controller
     public function edit(int $id)
     {
         $event = Event::with(['groups'])->find($id);
+
+        $this->authorize('update', $event);
+
         $groups = Group::all(['id', 'name']);
         $formateurs = User::query()
             ->whereHas('role', function (Builder $query) {
@@ -113,6 +124,8 @@ class EventsController extends Controller
      */
     public function update(UpdateEventRequest $request, Event $event)
     {
+        $this->authorize('update', $event);
+
         $data = Arr::only($request->validated(), ['title', 'description', 'formateur_id']);
 
         $event->fill($data);
@@ -128,6 +141,8 @@ class EventsController extends Controller
      */
     public function destroy(Event $event)
     {
+        $this->authorize('delete', $event);
+
         $event->groups()->detach();
         $event->delete();
 

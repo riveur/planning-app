@@ -54,6 +54,8 @@ class User extends Authenticatable
      */
     protected $appends = ['fullname'];
 
+    protected $with = ['role:id,name'];
+
     /**
      * Get the user's full name.
      */
@@ -62,6 +64,11 @@ class User extends Authenticatable
         return Attribute::make(
             get: fn (mixed $value, array $attributes) => sprintf('%s %s', strtoupper($attributes['lastname']), ucfirst($attributes['firstname'])),
         );
+    }
+
+    public function roleIs($name)
+    {
+        return $this->role && $this->role->name === $name;
     }
 
     public function role(): BelongsTo
