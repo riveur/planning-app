@@ -1,4 +1,4 @@
-import { Event } from "@/types";
+import { Event, WithOwner } from "@/types";
 
 import {
   ColumnDef,
@@ -21,10 +21,9 @@ import { Link } from "@inertiajs/react";
 import { Button } from "@/components/ui/button";
 import { Edit, Eye, MoreVertical, Trash } from "lucide-react";
 import { Method } from "@inertiajs/inertia";
+import { format } from "date-fns";
 
-const dateFormatter = new Intl.DateTimeFormat('default', { timeStyle: 'medium', dateStyle: "medium" });
-
-export const columns: ColumnDef<Event>[] = [
+export const columns: ColumnDef<Event & WithOwner>[] = [
   {
     accessorKey: "id",
     header: "#",
@@ -34,19 +33,23 @@ export const columns: ColumnDef<Event>[] = [
     header: "Titre",
   },
   {
-    accessorKey: "description",
-    header: "Description",
-    cell: ({ row }) => {
-      const description: string = row.getValue('description');
-      return description.slice(0, 50) + '...';
-    }
+    accessorKey: "owner.fullname",
+    header: "Créé par"
   },
   {
     accessorKey: "created_at",
     header: "Date de création",
     cell: ({ row }) => {
       const date = new Date(row.getValue('created_at'));
-      return dateFormatter.format(date);
+      return format(date, 'PPpp');
+    }
+  },
+  {
+    accessorKey: "updated_at",
+    header: "Date de modification",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue('updated_at'));
+      return format(date, 'PPpp');
     }
   },
   {

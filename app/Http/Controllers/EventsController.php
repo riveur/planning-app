@@ -24,7 +24,7 @@ class EventsController extends Controller
     {
         $this->authorize('viewAny', Event::class);
 
-        $events = Event::all();
+        $events = Event::with(['owner:id,firstname,lastname'])->get();
 
         return Inertia::render('Events/Index', compact('events'));
     }

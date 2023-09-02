@@ -59,6 +59,10 @@ export type Event = {
   updated_at: string;
 };
 
+export type WithOwner = {
+  owner: User
+};
+
 export type WithGroups = {
   groups?: Group[]
 };
