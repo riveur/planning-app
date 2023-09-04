@@ -1,11 +1,16 @@
 import { Schedule, WithEvent } from "@/types";
 import { FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { format, formatDuration, intervalToDuration } from "date-fns";
+import { format, intervalToDuration } from "date-fns";
 import { Separator } from "@/components/ui/separator";
 
 const formatInterval = (start: Date, end: Date) => {
-  return `${format(start, 'HH:mm')} - ${format(end, 'HH:mm')} (${formatDuration(intervalToDuration({ start, end }))})`;
+  const durations = intervalToDuration({ start, end });
+  let formattedInterval = `${format(start, 'HH:mm')} - ${format(end, 'HH:mm')}`;
+  if (durations) {
+    formattedInterval += ` (${durations.hours}h${durations.minutes})`;
+  }
+  return formattedInterval;
 };
 
 export const ScheduleCard: FC<{ schedule: Schedule & WithEvent }> = ({ schedule }) => {

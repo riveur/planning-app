@@ -32,11 +32,13 @@ class EventsController extends Controller
         $schedules = $schedules->get()->flatMap(function ($schedule) {
             return [
                 [
+                    'id' => $schedule->id,
                     'title' => $schedule->event->title,
                     'start' => $schedule->start_morning_date,
                     'end' => $schedule->end_morning_date,
                 ],
                 [
+                    'id' => $schedule->id,
                     'title' => $schedule->event->title,
                     'start' => $schedule->start_afternoon_date,
                     'end' => $schedule->end_afternoon_date,

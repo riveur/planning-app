@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\EventsController;
+use App\Http\Controllers\Api\SchedulesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,5 +26,12 @@ Route::middleware('auth')->group(function () {
         ->name('api.events.')
         ->group(function () {
             Route::get('/feed', 'feed')->name('feed');
+        });
+
+    Route::controller(SchedulesController::class)
+        ->prefix('schedules')
+        ->name('api.schedules.')
+        ->group(function () {
+            Route::put('/{schedule}', 'update')->name('update');
         });
 });

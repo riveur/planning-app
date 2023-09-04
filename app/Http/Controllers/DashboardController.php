@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Schedule;
+use Carbon\CarbonImmutable;
+use DateTimeZone;
+use ICal\ICal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -19,7 +22,7 @@ class DashboardController extends Controller
 
         $incomingSchedules = Schedule::with(['event'])
             ->where('date', '>', date('Y-m-d'))
-            ->orderBy('date', 'desc')
+            ->orderBy('date', 'asc')
             ->limit(5);
 
         if (!$user->roleIs('admin')) {
@@ -34,12 +37,17 @@ class DashboardController extends Controller
 
         return Inertia::render('Home', [
             'scheduleOfDay' => $scheduleOfDay->first(),
-            'incomingSchedules' => $incomingSchedules->get()->reverse()->values()
+            'incomingSchedules' => $incomingSchedules->get()
         ]);
     }
 
     public function calendar()
     {
-        return Inertia::render('Calendar');
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        return Inertia::render('Calendar', [
+            'canEditCalendar' => $user->roleIs('admin'),
+        ]);
     }
 }
