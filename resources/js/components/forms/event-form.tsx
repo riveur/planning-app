@@ -5,7 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { router } from "@inertiajs/react";
-import { EventValidation, EventValidationSchema, StoreEventValidation, StoreEventValidationSchema } from "@/lib/validation";
+import { EventValidation, StoreEventValidation, StoreEventValidationSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Event, Group, User, WithGroups } from "@/types";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -16,8 +16,19 @@ import { format } from "date-fns";
 import { fr as FrenchDateLocale } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
+import { Checkbox } from "../ui/checkbox";
 
 const groupMapper = (group: Group) => ({ label: group.name, value: group.id });
+
+const days = [
+  { id: 'monday', label: 'Lundi' },
+  { id: 'tuesday', label: 'Mardi' },
+  { id: 'wednesday', label: 'Mercredi' },
+  { id: 'thursday', label: 'Jeudi' },
+  { id: 'friday', label: 'Vendredi' },
+  { id: 'saturday', label: 'Samedi' },
+  { id: 'sunday', label: 'Dimanche' }
+] as const;
 
 export function EventForm({ event, formateurs = [], groups = [] }: { event?: Event & WithGroups, formateurs?: User[], groups?: Group[] }) {
   const form = useForm<StoreEventValidationSchema>({
@@ -28,6 +39,7 @@ export function EventForm({ event, formateurs = [], groups = [] }: { event?: Eve
         title: '',
         description: '',
         groups: [],
+        days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
         start_date: new Date(),
         end_date: new Date(),
         start_morning_time: '08:00',
@@ -310,6 +322,55 @@ export function EventForm({ event, formateurs = [], groups = [] }: { event?: Eve
                         </div>
                       </div>
                     </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <FormField
+                      control={form.control}
+                      name="days"
+                      render={() => (
+                        <FormItem>
+                          <div className="mb-4">
+                            <FormLabel className="text-base">Jours inclus</FormLabel>
+                          </div>
+                          <div className="flex gap-4">
+                            {days.map((day) => (
+                              <FormField
+                                key={day.id}
+                                control={form.control}
+                                name="days"
+                                render={({ field }) => {
+                                  return (
+                                    <FormItem
+                                      key={day.id}
+                                      className="flex flex-row items-start space-x-3 space-y-0"
+                                    >
+                                      <FormControl>
+                                        <Checkbox
+                                          checked={field.value?.includes(day.id)}
+                                          onCheckedChange={(checked) => {
+                                            return checked
+                                              ? field.onChange([...field.value, day.id])
+                                              : field.onChange(
+                                                field.value?.filter(
+                                                  (value) => value !== day.id
+                                                )
+                                              )
+                                          }}
+                                        />
+                                      </FormControl>
+                                      <FormLabel className="font-normal">
+                                        {day.label}
+                                      </FormLabel>
+                                    </FormItem>
+                                  )
+                                }}
+                              />
+                            ))}
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </>
               )}

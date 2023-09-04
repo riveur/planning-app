@@ -54,6 +54,7 @@ class EventsController extends Controller
         $this->authorize('create', Event::class);
 
         $data = $request->only(['title', 'description', 'formateur_id']);
+        $days = $request->validated('days');
 
         /** @var \App\Models\Event $event */
         $event = Event::create($data + ['owner_id' => $request->user()->id]);
@@ -70,18 +71,18 @@ class EventsController extends Controller
 
         $mappedSchedules = Arr::map(
             $periodes->toArray(),
-            function (CarbonInterface $periode) use ($startMorningTime, $endMorningTime, $startAfternoonTime, $endAfternoonTime) {
-                return [
+            function (CarbonInterface $periode) use ($startMorningTime, $endMorningTime, $startAfternoonTime, $endAfternoonTime, $days) {
+                return in_array(strtolower($periode->englishDayOfWeek), $days) ?  [
                     'date' => $periode->toDateString(),
                     'start_morning_date' => $periode->setTimeFromTimeString($startMorningTime)->toDateTimeString(),
                     'end_morning_date' => $periode->setTimeFromTimeString($endMorningTime)->toDateTimeString(),
                     'start_afternoon_date' => $periode->setTimeFromTimeString($startAfternoonTime)->toDateTimeString(),
                     'end_afternoon_date' => $periode->setTimeFromTimeString($endAfternoonTime)->toDateTimeString(),
-                ];
+                ] : false;
             }
         );
 
-        $event->schedules()->createMany($mappedSchedules);
+        $event->schedules()->createMany(array_filter($mappedSchedules));
 
         if ($request->validated('groups')) {
             $event->groups()->attach($request->validated('groups'));

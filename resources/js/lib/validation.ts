@@ -57,7 +57,10 @@ export const StoreEventValidation = EventValidation.extend({
   start_morning_time: z.string().regex(timeRegex, 'Heure invalide'),
   end_morning_time: z.string().regex(timeRegex, 'Heure invalide'),
   start_afternoon_time: z.string().regex(timeRegex, 'Heure invalide'),
-  end_afternoon_time: z.string().regex(timeRegex, 'Heure invalide')
+  end_afternoon_time: z.string().regex(timeRegex, 'Heure invalide'),
+  days: z.array(z.string()).refine((value) => value.some((item) => item), {
+    message: 'Vous devez choisir au moins une valeur',
+  }),
 });
 
 export const LoginValidation = z.object({
