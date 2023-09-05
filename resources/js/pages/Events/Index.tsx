@@ -1,11 +1,11 @@
 import { useDashboardLayout } from "@/components/layouts/dashboard-layout";
-import { DataTable, columns } from "@/components/tables/events-table";
+import { BaseDataTable } from "@/components/tables/base-data-table";
+import { columns } from "@/components/tables/events-table";
 import { Button } from "@/components/ui/button";
-import { Event } from "@/types";
 import { Link } from "@inertiajs/react";
 import { PlusCircle } from "lucide-react";
 
-export default function Index({ events }: { events: Event[] }) {
+export default function Index() {
   return (
     <>
       <div className="flex justify-between items-center mb-4">
@@ -17,7 +17,12 @@ export default function Index({ events }: { events: Event[] }) {
           </Link>
         </Button>
       </div>
-      <DataTable columns={columns} data={events} />
+      <BaseDataTable
+        url={route('events.index')}
+        queryKey="events"
+        columns={columns}
+        emptyMessage="Aucun évènement"
+      />
     </>
   );
 }

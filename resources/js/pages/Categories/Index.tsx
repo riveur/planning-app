@@ -1,11 +1,12 @@
 import { useDashboardLayout } from "@/components/layouts/dashboard-layout";
-import { DataTable, columns } from "@/components/tables/categories-table";
+import { BaseDataTable } from "@/components/tables/base-data-table";
+import { columns } from "@/components/tables/categories-table";
 import { Button } from "@/components/ui/button";
 import { Category } from "@/types";
 import { Link } from "@inertiajs/react";
 import { PlusCircle } from "lucide-react";
 
-export default function Index({ categories }: { categories: Category[] }) {
+export default function Index() {
   return (
     <>
       <div className="flex justify-between items-center mb-4">
@@ -17,7 +18,12 @@ export default function Index({ categories }: { categories: Category[] }) {
           </Link>
         </Button>
       </div>
-      <DataTable columns={columns} data={categories} />
+      <BaseDataTable
+        url={route('categories.index')}
+        queryKey="categories"
+        emptyMessage="Aucune catégorie"
+        columns={columns}
+      />
     </>
   );
 }

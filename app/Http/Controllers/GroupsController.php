@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Group;
 use App\Http\Requests\StoreGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class GroupsController extends Controller
@@ -12,13 +13,15 @@ class GroupsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', Group::class);
 
-        $groups = Group::all();
+        if ($request->expectsJson()) {
+            return Group::query()->paginate(perPage: $request->query('size', 10));
+        }
 
-        return Inertia::render('Groups/Index', compact('groups'));
+        return Inertia::render('Groups/Index');
     }
 
     /**

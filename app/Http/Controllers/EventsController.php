@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Inertia\Inertia;
 
@@ -21,13 +22,16 @@ class EventsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', Event::class);
 
-        $events = Event::with(['owner:id,firstname,lastname'])->get();
+        if ($request->expectsJson()) {
+            $events = Event::with(['owner:id,firstname,lastname'])->paginate(perPage: $request->query('size', 10));
+            return $events;
+        }
 
-        return Inertia::render('Events/Index', compact('events'));
+        return Inertia::render('Events/Index');
     }
 
     /**

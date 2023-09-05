@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Models\Group;
 use App\Models\Role;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -21,13 +22,15 @@ class UsersController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', User::class);
 
-        $users = User::all();
+        if ($request->expectsJson()) {
+            return User::query()->paginate(perPage: $request->query('size', 10));
+        }
 
-        return Inertia::render('Users/Index', compact('users'));
+        return Inertia::render('Users/Index');
     }
 
     /**

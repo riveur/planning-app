@@ -1,11 +1,12 @@
 import { useDashboardLayout } from "@/components/layouts/dashboard-layout";
-import { DataTable, columns } from "@/components/tables/groups-table";
+import { BaseDataTable } from "@/components/tables/base-data-table";
+import { columns } from "@/components/tables/groups-table";
 import { Button } from "@/components/ui/button";
 import { Group } from "@/types";
 import { Link } from "@inertiajs/react";
 import { PlusCircle } from "lucide-react";
 
-export default function Index({ groups }: { groups: Group[] }) {
+export default function Index() {
   return (
     <>
       <div className="flex justify-between items-center mb-4">
@@ -17,7 +18,12 @@ export default function Index({ groups }: { groups: Group[] }) {
           </Link>
         </Button>
       </div>
-      <DataTable columns={columns} data={groups} />
+      <BaseDataTable
+        url={route('groups.index')}
+        queryKey="groups"
+        emptyMessage="Aucun groupe"
+        columns={columns}
+      />
     </>
   );
 }

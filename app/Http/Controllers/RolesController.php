@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Role;
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class RolesController extends Controller
@@ -12,13 +13,15 @@ class RolesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', Role::class);
 
-        $roles = Role::all();
+        if ($request->expectsJson()) {
+            return Role::query()->paginate(perPage: $request->query('size', 10));
+        }
 
-        return Inertia::render('Roles/Index', compact('roles'));
+        return Inertia::render('Roles/Index');
     }
 
     /**

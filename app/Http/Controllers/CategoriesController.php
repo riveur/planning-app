@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class CategoriesController extends Controller
@@ -12,13 +13,15 @@ class CategoriesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', Category::class);
 
-        $categories = Category::all();
+        if ($request->expectsJson()) {
+            return Category::query()->paginate(perPage: $request->query('size', 10));
+        }
 
-        return Inertia::render('Categories/Index', compact('categories'));
+        return Inertia::render('Categories/Index');
     }
 
     /**
