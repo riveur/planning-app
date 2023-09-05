@@ -25,17 +25,10 @@ class DashboardController extends Controller
             ->whereDate('end_date', date('Y-m-d'));
 
         $incomingSchedules = Schedule::with(['event', 'event.category:id,name,color'])
-            ->where('start_date', '<=', now()->addDays(6)->endOfDay())
-            ->where('start_date', '>', now()->startOfDay())
-            ->where('end_date', '<=', now()->addDays(6)->endOfDay())
-            ->where('end_date', '>', now()->startOfDay())
-            ->orderBy('start_date', 'asc');
-
-        $incomingSchedules = $incomingSchedules->get()
-            ->groupBy([function (Schedule $schedule) {
-                return (new Carbon($schedule->start_date))->toDateString();
-            }])
-            ->all();
+            ->whereDate('start_date', '>', now()->toDateString())
+            ->whereDate('end_date', '>', now()->toDateString())
+            ->orderBy('start_date', 'asc')
+            ->limit(10);
 
         if (!$user->roleIs('admin')) {
             $schedulesOfDay = $schedulesOfDay->whereHas('event.groups', function ($query) use ($user) {
@@ -46,6 +39,12 @@ class DashboardController extends Controller
                 return $query->where('id', '=', $user->group_id);
             });
         }
+
+        $incomingSchedules = $incomingSchedules->get()
+            ->groupBy([function (Schedule $schedule) {
+                return (new Carbon($schedule->start_date))->toDateString();
+            }])
+            ->all();
 
         return Inertia::render('Home', [
             'schedulesOfDay' => $schedulesOfDay->get(),
