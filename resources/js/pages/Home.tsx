@@ -14,7 +14,7 @@ export default function Home({
   schedulesOfDay,
   incomingSchedules
 }: {
-  schedulesOfDay: (Schedule & WithEvent)[],
+  schedulesOfDay: (Schedule & { event: Event & WithCategory })[],
   incomingSchedules: Record<string, (Schedule & { event: Event & WithCategory })[]>
 }) {
   return (
@@ -37,6 +37,7 @@ export default function Home({
                   title: schedule.event.title,
                   start: new Date(schedule.start_date),
                   end: new Date(schedule.end_date),
+                  backgroundColor: schedule.event.category.color
                 }
               ))}
               initialView="timeGridOneDay"

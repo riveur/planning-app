@@ -20,7 +20,7 @@ class EventsController extends Controller
         $user = $request->user();
 
         /** @var \Illuminate\Database\Eloquent\Collection|\App\Models\Schedule[] $schedules */
-        $schedules = Schedule::with(['event'])
+        $schedules = Schedule::with(['event', 'event.category:id,color'])
             ->where('start_date', '>=', $data['start'])
             ->where('end_date', '<=', $data['end']);
 
@@ -33,6 +33,7 @@ class EventsController extends Controller
         $schedules = $schedules->get()->map(function ($schedule) {
             return [
                 'id' => $schedule->id,
+                'color' => $schedule->event->category->color,
                 'title' => $schedule->event->title,
                 'start' => $schedule->start_date,
                 'end' => $schedule->end_date,

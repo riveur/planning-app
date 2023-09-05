@@ -20,7 +20,7 @@ class DashboardController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        $schedulesOfDay = Schedule::with(['event'])
+        $schedulesOfDay = Schedule::with(['event', 'event.category:id,color'])
             ->whereDate('start_date', date('Y-m-d'))
             ->whereDate('end_date', date('Y-m-d'));
 

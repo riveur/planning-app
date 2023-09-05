@@ -31,7 +31,7 @@ export const EventContentRender: CustomContentGenerator<EventContentArg> = (info
 const eventsSource: EventSourceInput = function (info, successCallback, failureCallback) {
   const urlParams = new URLSearchParams({ start: format(info.start, 'yyyy-MM-dd'), end: format(info.end, 'yyyy-MM-dd') });
 
-  axios.get<{ id: number, title: string, start: string, end: string }[]>(
+  axios.get<{ id: number, title: string, start: string, end: string, color: string }[]>(
     `${route('api.events.feed')}?${urlParams.toString()}`,
     { headers: { 'Accept': 'application/json' } }
   )
@@ -39,6 +39,7 @@ const eventsSource: EventSourceInput = function (info, successCallback, failureC
       successCallback(response.data.map(row => ({
         id: row.id.toString(),
         title: row.title,
+        backgroundColor: row.color,
         start: new Date(row.start),
         end: new Date(row.end),
       })));
@@ -53,11 +54,10 @@ export default function Calendar({ canEditCalendar }: { canEditCalendar: boolean
   const { toast } = useToast();
 
   const onEventChange = (info: EventDropArg | EventResizeDoneArg) => {
-    const oldRange = info.oldEvent._instance?.range;
     const newRange = info.event._instance?.range;
     const scheduleId = info.event._def.publicId;
 
-    if (!newRange || !oldRange) {
+    if (!newRange) {
       info.revert();
       return;
     }
@@ -65,8 +65,6 @@ export default function Calendar({ canEditCalendar }: { canEditCalendar: boolean
     axios.put(route('api.schedules.update', { schedule: scheduleId }), {
       start: newRange.start,
       end: newRange.end,
-      initialStart: oldRange.start,
-      initialEnd: oldRange.end
     })
       .then(response => {
         toast({ description: response.data.message });
