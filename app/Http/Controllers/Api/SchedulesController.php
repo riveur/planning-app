@@ -41,10 +41,8 @@ class SchedulesController extends Controller
         $this->authorize('update', $schedule);
 
         $data = $request->validate([
-            'initialStart' => ['required', 'date'],
-            'initialEnd' => ['required', 'date'],
-            'start' => ['required', 'date'],
-            'end' => ['required', 'date']
+            'start' => ['required', 'date', 'before_or_equal:end'],
+            'end' => ['required', 'date', 'after_or_equal:start']
         ]);
 
         $data = collect($data)
@@ -53,27 +51,10 @@ class SchedulesController extends Controller
             })
             ->toArray();
 
-        switch (true) {
-            case ($data['initialStart']->toDateTimeString() === $schedule->start_morning_date) &&
-                ($data['initialEnd']->toDateTimeString() === $schedule->end_morning_date):
-                $schedule->fill([
-                    'start_morning_date' => $data['start'],
-                    'end_morning_date' => $data['end'],
-                ]);
-                break;
-            case ($data['initialStart']->toDateTimeString() === $schedule->start_afternoon_date) &&
-                ($data['initialEnd']->toDateTimeString() === $schedule->end_afternoon_date):
-                $schedule->fill([
-                    'start_afternoon_date' => $data['start'],
-                    'end_afternoon_date' => $data['end'],
-                ]);
-                break;
-            case ($data['start']->toDateString() !== $schedule->date) &&
-                ($data['end']->toDateString() !== $schedule->date):
-                $schedule->fill([
-                    'date' => $data['start']->toDateString()
-                ]);
-        }
+        $schedule->fill([
+            'start_date' => $data['start']->toDateTimeString(),
+            'end_date' => $data['end']->toDateTimeString(),
+        ]);
 
         $schedule->update();
 

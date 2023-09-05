@@ -19,9 +19,9 @@ class Event extends Model
      */
     protected $fillable = [
         'title',
-        'description',
         'owner_id',
-        'formateur_id'
+        'formateur_id',
+        'category_id'
     ];
 
     public function owner(): BelongsTo
@@ -32,6 +32,11 @@ class Event extends Model
     public function formateur(): BelongsTo
     {
         return $this->belongsTo(User::class, foreignKey: 'formateur_id');
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
     }
 
     public function schedules(): HasMany

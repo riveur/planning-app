@@ -10,11 +10,8 @@ class Schedule extends Model
 {
 
     protected $fillable = [
-        'date',
-        'start_morning_date',
-        'end_morning_date',
-        'start_afternoon_date',
-        'end_afternoon_date',
+        'start_date',
+        'end_date',
     ];
 
     use HasFactory;

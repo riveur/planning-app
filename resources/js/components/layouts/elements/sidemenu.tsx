@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Link, usePage } from "@inertiajs/react";
 import { useUser } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
-import { Calendar, CalendarDaysIcon, HomeIcon, ShieldAlert, UserIcon, Users } from "lucide-react";
+import { BookCopyIcon, Calendar, CalendarDaysIcon, HomeIcon, ShieldAlert, UserIcon, Users } from "lucide-react";
 import React from "react";
 
 type SideMenuProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -30,6 +30,16 @@ export function SideMenu({ className, onChangePage }: SideMenuProps) {
                 <Link href="/events" className={activeClass(url.startsWith('/events'))} onClick={() => onChangePage?.(false)}>
                   <CalendarDaysIcon className="mr-2 w-4 h-4" />
                   &Eacute;vènements
+                </Link>
+              </Button>
+            </li>
+          }
+          {can('viewAnyCategory') &&
+            <li className="w-full">
+              <Button variant="ghost" className="w-full font-bold justify-start" asChild>
+                <Link href="/categories" className={activeClass(url.startsWith('/categories'))} onClick={() => onChangePage?.(false)}>
+                  <BookCopyIcon className="mr-2 w-4 h-4" />
+                  Catégories
                 </Link>
               </Button>
             </li>

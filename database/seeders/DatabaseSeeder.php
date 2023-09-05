@@ -18,17 +18,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             GroupSeeder::class,
-            RoleSeeder::class
+            RoleSeeder::class,
+            CategorySeeder::class,
         ]);
-
-        User::factory()->count(10)->create();
-
-        $user = User::factory()->createOne();
-
-        Event::factory()
-            ->count(10)
-            ->has(Schedule::factory()->count(3))
-            ->for($user, relationship: 'owner')
-            ->create();
     }
 }

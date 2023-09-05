@@ -18,7 +18,7 @@ export type WithRole = {
 
 export type WithGroup = {
   group?: Group
-}
+};
 
 export type Role = {
   id: number;
@@ -38,13 +38,22 @@ export type Group = {
 
 export type Schedule = {
   id: number;
-  date: string;
-  start_morning_date: string;
-  end_morning_date: string;
-  start_afternoon_date: string;
-  end_afternoon_date: string;
+  start_date: string;
+  end_date: string;
   created_at: string;
   updated_at: string;
+};
+
+export type Category = {
+  id: number;
+  name: string;
+  color: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type WithCategory = {
+  category: Category
 };
 
 export type WithEvent = {
@@ -54,7 +63,6 @@ export type WithEvent = {
 export type Event = {
   id: number;
   title: string;
-  description: string;
   created_at: string;
   updated_at: string;
 };
@@ -81,7 +89,8 @@ export interface AuthenticatedInertiaPage extends Page<PageProps> {
       viewAnyEvent: boolean,
       viewAnyUser: boolean,
       viewAnyGroup: boolean,
-      viewAnyRole: boolean
+      viewAnyRole: boolean,
+      viewAnyCategory: boolean,
     }
   }
 };

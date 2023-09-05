@@ -4,11 +4,13 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 
+use App\Models\Category;
 use App\Models\Event;
 use App\Models\Group;
 use App\Models\Role;
 use App\Models\Schedule;
 use App\Models\User;
+use App\Policies\CategoryPolicy;
 use App\Policies\EventPolicy;
 use App\Policies\GroupPolicy;
 use App\Policies\RolePolicy;
@@ -28,7 +30,8 @@ class AuthServiceProvider extends ServiceProvider
         Event::class => EventPolicy::class,
         Schedule::class => SchedulePolicy::class,
         Role::class => RolePolicy::class,
-        Group::class => GroupPolicy::class
+        Group::class => GroupPolicy::class,
+        Category::class => CategoryPolicy::class,
     ];
 
     /**

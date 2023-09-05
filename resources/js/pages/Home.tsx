@@ -1,21 +1,21 @@
 import { useDashboardLayout } from "@/components/layouts/dashboard-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Schedule, WithEvent } from "@/types";
+import { Event, Schedule, WithCategory, WithEvent } from "@/types";
 import FullCalendar from "@fullcalendar/react";
 import fr from "@fullcalendar/core/locales/fr";
 import TimeGridPlugin from "@fullcalendar/timegrid";
 import { EventContentRender } from "./Calendar";
 import { format } from "date-fns";
-import { ScheduleCard } from "@/components/elements/schedule-card";
+import { ScheduleCard } from "@/components/elements/incoming-schedules-card";
 import { CalendarCheck } from "lucide-react";
 
 export default function Home({
-  scheduleOfDay,
+  schedulesOfDay,
   incomingSchedules
 }: {
-  scheduleOfDay: Schedule & WithEvent | null,
-  incomingSchedules: (Schedule & WithEvent)[]
+  schedulesOfDay: (Schedule & WithEvent)[],
+  incomingSchedules: Record<string, (Schedule & { event: Event & WithCategory })[]>
 }) {
   return (
     <>
@@ -32,22 +32,13 @@ export default function Home({
               plugins={[TimeGridPlugin]}
               allDaySlot={false}
               headerToolbar={false}
-              events={
-                scheduleOfDay !== null ?
-                  [
-                    {
-                      title: scheduleOfDay.event.title,
-                      start: new Date(scheduleOfDay.start_morning_date),
-                      end: new Date(scheduleOfDay.end_morning_date)
-                    },
-                    {
-                      title: scheduleOfDay.event.title,
-                      start: new Date(scheduleOfDay.start_afternoon_date),
-                      end: new Date(scheduleOfDay.end_afternoon_date)
-                    },
-                  ] :
-                  []
-              }
+              events={schedulesOfDay.map(schedule => (
+                {
+                  title: schedule.event.title,
+                  start: new Date(schedule.start_date),
+                  end: new Date(schedule.end_date),
+                }
+              ))}
               initialView="timeGridOneDay"
               views={{
                 timeGridOneDay: {
@@ -73,7 +64,7 @@ export default function Home({
           <CardContent className="pt-6">
             <div className="flex flex-col gap-2">
               {
-                incomingSchedules.length === 0 ?
+                Object.keys(incomingSchedules).length === 0 ?
                   (<Card className="">
                     <CardContent className="pt-6">
                       <div className="flex flex-col justify-center items-center gap-2">
@@ -82,7 +73,7 @@ export default function Home({
                       </div>
                     </CardContent>
                   </Card>) :
-                  incomingSchedules.map(schedule => (<ScheduleCard key={schedule.id} schedule={schedule} />))
+                  Object.entries(incomingSchedules).map(([date, schedules]) => (<ScheduleCard key={date} date={date} schedules={schedules} />))
               }
             </div>
           </CardContent>

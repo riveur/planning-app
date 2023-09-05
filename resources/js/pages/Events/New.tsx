@@ -1,12 +1,12 @@
 import { EventForm } from "@/components/forms/event-form";
 import { useDashboardLayout } from "@/components/layouts/dashboard-layout";
-import { Group, User } from "@/types";
+import { Category, Group, User } from "@/types";
 
-export default function New({ formateurs, groups }: { formateurs: User[], groups: Group[] }) {
+export default function New({ formateurs, groups, categories }: { formateurs: User[], groups: Group[], categories: Category[] }) {
   return (
     <>
       <h1 className="font-bold text-2xl mb-4">Nouvel évènement</h1>
-      <EventForm formateurs={formateurs} groups={groups} />
+      <EventForm formateurs={formateurs} groups={groups} categories={categories} />
     </>
   );
 }

@@ -12,8 +12,8 @@ class EventsController extends Controller
     public function feed(Request $request)
     {
         $data = $request->validate([
-            'start' => ['required', 'date'],
-            'end' => ['required', 'date']
+            'start' => ['required', 'date', 'before_or_equal:end'],
+            'end' => ['required', 'date', 'after_or_equal:start']
         ]);
 
         /** @var \App\Models\User $user */
@@ -21,7 +21,8 @@ class EventsController extends Controller
 
         /** @var \Illuminate\Database\Eloquent\Collection|\App\Models\Schedule[] $schedules */
         $schedules = Schedule::with(['event'])
-            ->whereBetween('date', [$data['start'], $data['end']]);
+            ->where('start_date', '>=', $data['start'])
+            ->where('end_date', '<=', $data['end']);
 
         if (!$user->roleIs('admin')) {
             $schedules = $schedules->whereHas('event.groups', function ($query) use ($user) {
@@ -29,20 +30,12 @@ class EventsController extends Controller
             });
         }
 
-        $schedules = $schedules->get()->flatMap(function ($schedule) {
+        $schedules = $schedules->get()->map(function ($schedule) {
             return [
-                [
-                    'id' => $schedule->id,
-                    'title' => $schedule->event->title,
-                    'start' => $schedule->start_morning_date,
-                    'end' => $schedule->end_morning_date,
-                ],
-                [
-                    'id' => $schedule->id,
-                    'title' => $schedule->event->title,
-                    'start' => $schedule->start_afternoon_date,
-                    'end' => $schedule->end_afternoon_date,
-                ]
+                'id' => $schedule->id,
+                'title' => $schedule->event->title,
+                'start' => $schedule->start_date,
+                'end' => $schedule->end_date,
             ];
         });
 

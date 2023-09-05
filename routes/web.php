@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\GroupsController;
@@ -80,6 +81,19 @@ Route::middleware('auth')->group(function () {
             Route::get('/edit/{group}', 'edit')->name('edit');
             Route::put('/edit/{group}', 'update')->name('update');
             Route::delete('/{group}', 'destroy')->name('destroy');
+        });
+
+    Route::controller(CategoriesController::class)
+        ->prefix('categories')
+        ->name('categories.')
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/new', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{category}', 'show')->name('show');
+            Route::get('/edit/{category}', 'edit')->name('edit');
+            Route::put('/edit/{category}', 'update')->name('update');
+            Route::delete('/{category}', 'destroy')->name('destroy');
         });
 
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');

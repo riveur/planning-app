@@ -15,11 +15,8 @@ class CreateSchedulesTable extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
-            $table->date('date');
-            $table->dateTime('start_morning_date');
-            $table->dateTime('end_morning_date');
-            $table->dateTime('start_afternoon_date');
-            $table->dateTime('end_afternoon_date');
+            $table->dateTime('start_date');
+            $table->dateTime('end_date');
             $table->foreignId('event_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });

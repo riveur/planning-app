@@ -45,6 +45,7 @@ class HandleInertiaRequests extends Middleware
                     'viewAnyUser' => $request->user()->can('viewAny', 'App\\Models\\User') ?? false,
                     'viewAnyGroup' => $request->user()->can('viewAny', 'App\\Models\\Group') ?? false,
                     'viewAnyRole' => $request->user()->can('viewAny', 'App\\Models\\Role') ?? false,
+                    'viewAnyCategory' => $request->user()->can('viewAny', 'App\\Models\\Category') ?? false,
                 ] : [];
             }
         ]);

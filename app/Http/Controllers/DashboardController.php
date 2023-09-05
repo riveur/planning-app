@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Event;
 use App\Models\Schedule;
+use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use DateTimeZone;
 use ICal\ICal;
@@ -18,15 +20,25 @@ class DashboardController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        $scheduleOfDay = Schedule::with(['event'])->where(['date' => date('Y-m-d')]);
+        $schedulesOfDay = Schedule::with(['event'])
+            ->whereDate('start_date', date('Y-m-d'))
+            ->whereDate('end_date', date('Y-m-d'));
 
-        $incomingSchedules = Schedule::with(['event'])
-            ->where('date', '>', date('Y-m-d'))
-            ->orderBy('date', 'asc')
-            ->limit(5);
+        $incomingSchedules = Schedule::with(['event', 'event.category:id,name,color'])
+            ->where('start_date', '<=', now()->addDays(6)->endOfDay())
+            ->where('start_date', '>', now()->startOfDay())
+            ->where('end_date', '<=', now()->addDays(6)->endOfDay())
+            ->where('end_date', '>', now()->startOfDay())
+            ->orderBy('start_date', 'asc');
+
+        $incomingSchedules = $incomingSchedules->get()
+            ->groupBy([function (Schedule $schedule) {
+                return (new Carbon($schedule->start_date))->toDateString();
+            }])
+            ->all();
 
         if (!$user->roleIs('admin')) {
-            $scheduleOfDay = $scheduleOfDay->whereHas('event.groups', function ($query) use ($user) {
+            $schedulesOfDay = $schedulesOfDay->whereHas('event.groups', function ($query) use ($user) {
                 return $query->where('id', '=', $user->group_id);
             });
 
@@ -36,8 +48,8 @@ class DashboardController extends Controller
         }
 
         return Inertia::render('Home', [
-            'scheduleOfDay' => $scheduleOfDay->first(),
-            'incomingSchedules' => $incomingSchedules->get()
+            'schedulesOfDay' => $schedulesOfDay->get(),
+            'incomingSchedules' => $incomingSchedules
         ]);
     }
 

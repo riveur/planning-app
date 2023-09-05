@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
+use App\Models\Category;
 use App\Models\Group;
 use App\Models\Schedule;
 use App\Models\User;
@@ -37,13 +38,14 @@ class EventsController extends Controller
         $this->authorize('create', Event::class);
 
         $groups = Group::all(['id', 'name']);
+        $categories = Category::all(['id', 'name', 'color']);
         $formateurs = User::query()
             ->whereHas('role', function (Builder $query) {
                 return $query->where(['name' => 'formateur']);
             })
             ->get(['id', 'firstname', 'lastname']);
 
-        return Inertia::render('Events/New', compact('groups', 'formateurs'));
+        return Inertia::render('Events/New', compact('groups', 'categories', 'formateurs'));
     }
 
     /**
@@ -53,7 +55,7 @@ class EventsController extends Controller
     {
         $this->authorize('create', Event::class);
 
-        $data = $request->only(['title', 'description', 'formateur_id']);
+        $data = $request->only(['title', 'formateur_id', 'category_id']);
         $days = $request->validated('days');
 
         /** @var \App\Models\Event $event */
@@ -69,20 +71,22 @@ class EventsController extends Controller
 
         $periodes = CarbonPeriod::create($startDate->toDateString(), $endDate->toDateString());
 
-        $mappedSchedules = Arr::map(
-            $periodes->toArray(),
+        $mappedSchedules = collect($periodes)->flatMap(
             function (CarbonInterface $periode) use ($startMorningTime, $endMorningTime, $startAfternoonTime, $endAfternoonTime, $days) {
                 return in_array(strtolower($periode->englishDayOfWeek), $days) ?  [
-                    'date' => $periode->toDateString(),
-                    'start_morning_date' => $periode->setTimeFromTimeString($startMorningTime)->toDateTimeString(),
-                    'end_morning_date' => $periode->setTimeFromTimeString($endMorningTime)->toDateTimeString(),
-                    'start_afternoon_date' => $periode->setTimeFromTimeString($startAfternoonTime)->toDateTimeString(),
-                    'end_afternoon_date' => $periode->setTimeFromTimeString($endAfternoonTime)->toDateTimeString(),
+                    [
+                        'start_date' => $periode->setTimeFromTimeString($startMorningTime)->toDateTimeString(),
+                        'end_date' => $periode->setTimeFromTimeString($endMorningTime)->toDateTimeString(),
+                    ],
+                    [
+                        'start_date' => $periode->setTimeFromTimeString($startAfternoonTime)->toDateTimeString(),
+                        'end_date' => $periode->setTimeFromTimeString($endAfternoonTime)->toDateTimeString(),
+                    ]
                 ] : false;
             }
         );
 
-        $event->schedules()->createMany(array_filter($mappedSchedules));
+        $event->schedules()->createMany($mappedSchedules->filter());
 
         if ($request->validated('groups')) {
             $event->groups()->attach($request->validated('groups'));
@@ -106,18 +110,19 @@ class EventsController extends Controller
      */
     public function edit(int $id)
     {
-        $event = Event::with(['groups'])->find($id);
+        $event = Event::with(['groups:id,name'])->find($id);
 
         $this->authorize('update', $event);
 
         $groups = Group::all(['id', 'name']);
+        $categories = Category::all(['id', 'name', 'color']);
         $formateurs = User::query()
             ->whereHas('role', function (Builder $query) {
                 return $query->where(['name' => 'formateur']);
             })
             ->get(['id', 'firstname', 'lastname']);
 
-        return Inertia::render('Events/Edit', compact('event', 'formateurs', 'groups'));
+        return Inertia::render('Events/Edit', compact('event', 'formateurs', 'groups', 'categories'));
     }
 
     /**
@@ -127,7 +132,7 @@ class EventsController extends Controller
     {
         $this->authorize('update', $event);
 
-        $data = Arr::only($request->validated(), ['title', 'description', 'formateur_id']);
+        $data = Arr::only($request->validated(), ['title', 'formateur_id', 'category_id']);
 
         $event->fill($data);
         $event->save();

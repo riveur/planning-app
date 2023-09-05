@@ -7,7 +7,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { router } from "@inertiajs/react";
 import { EventValidation, StoreEventValidation, StoreEventValidationSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Event, Group, User, WithGroups } from "@/types";
+import { Category, Event, Group, User, WithGroups } from "@/types";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MultiSelect } from "../ui/multi-select";
@@ -17,6 +17,7 @@ import { fr as FrenchDateLocale } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
+import { CategoryColorLabel } from "../elements/category-color-label";
 
 const groupMapper = (group: Group) => ({ label: group.name, value: group.id });
 
@@ -30,14 +31,23 @@ const days = [
   { id: 'sunday', label: 'Dimanche' }
 ] as const;
 
-export function EventForm({ event, formateurs = [], groups = [] }: { event?: Event & WithGroups, formateurs?: User[], groups?: Group[] }) {
+export function EventForm({
+  event,
+  formateurs = [],
+  groups = [],
+  categories = []
+}: {
+  event?: Event & WithGroups,
+  formateurs?: User[],
+  groups?: Group[],
+  categories?: Category[]
+}) {
   const form = useForm<StoreEventValidationSchema>({
     resolver: zodResolver(event ? EventValidation : StoreEventValidation),
     defaultValues: event ?
       { ...event, groups: event?.groups?.map(groupMapper) || [] } :
       {
         title: '',
-        description: '',
         groups: [],
         days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
         start_date: new Date(),
@@ -58,7 +68,9 @@ export function EventForm({ event, formateurs = [], groups = [] }: { event?: Eve
       router.put(route('events.update', { event: event.id }), { ...event, ...data, groups: data.groups.map(group => group.value) }, {
         onError(serverErrors) {
           if (serverErrors.title) form.setError('title', { message: serverErrors.title });
-          if (serverErrors.description) form.setError('description', { message: serverErrors.description });
+          if (serverErrors.formateur_id) form.setError('formateur_id', { message: serverErrors.formateur_id });
+          if (serverErrors.category_id) form.setError('category_id', { message: serverErrors.category_id });
+          if (serverErrors.groups) form.setError('groups', { message: serverErrors.groups });
         },
         onSuccess() {
           toast({ description: `L'évènement #${event.id} à bien été modifié` });
@@ -73,7 +85,11 @@ export function EventForm({ event, formateurs = [], groups = [] }: { event?: Eve
       }, {
         onError(serverErrors) {
           if (serverErrors.title) form.setError('title', { message: serverErrors.title });
-          if (serverErrors.description) form.setError('description', { message: serverErrors.description });
+          if (serverErrors.formateur_id) form.setError('formateur_id', { message: serverErrors.formateur_id });
+          if (serverErrors.category_id) form.setError('category_id', { message: serverErrors.category_id });
+          if (serverErrors.groups) form.setError('groups', { message: serverErrors.groups });
+          if (serverErrors.start_date) form.setError('start_date', { message: serverErrors.start_date });
+          if (serverErrors.end_date) form.setError('end_date', { message: serverErrors.end_date });
         },
         onSuccess() {
           toast({ description: 'L\'évènement à bien été créée' });
@@ -106,13 +122,24 @@ export function EventForm({ event, formateurs = [], groups = [] }: { event?: Eve
               <div className="flex flex-col space-y-1.5">
                 <FormField
                   control={form.control}
-                  name="description"
+                  name="category_id"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className={cn(form.formState.errors.description && 'font-bold')}>Description</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Une courte description" {...field} />
-                      </FormControl>
+                    <FormItem className="w-full">
+                      <FormLabel>Catégorie</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Choisir une catégorie" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {categories.map((category) => (
+                            <SelectItem key={category.id} value={category.id.toString()}>
+                              <CategoryColorLabel color={category.color}>{category.name}</CategoryColorLabel>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
