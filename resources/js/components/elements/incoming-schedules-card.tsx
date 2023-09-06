@@ -23,7 +23,7 @@ export const ScheduleCard: FC<{ date: string; schedules: (Schedule & ({ event: E
       <Separator />
       <CardContent className="px-4 py-2">
         {schedules.map(schedule => (
-          <p>
+          <p key={schedule.id}>
             {formatInterval(new Date(schedule.start_date), new Date(schedule.end_date))}{' : '}
             <span className="font-medium">{schedule.event.title}</span>{' '}
             <CategoryColorLabel

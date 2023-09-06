@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Edit, Eye, MoreVertical, Trash } from "lucide-react";
 import { Method } from "@inertiajs/inertia";
 import { format } from "date-fns";
+import { useQueryClient } from "react-query";
 
 export const columns: ColumnDef<Event & WithOwner>[] = [
   {
@@ -39,6 +40,7 @@ export const columns: ColumnDef<Event & WithOwner>[] = [
   {
     header: "Actions",
     cell: ({ row }) => {
+      const queryClient = useQueryClient();
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -58,7 +60,15 @@ export const columns: ColumnDef<Event & WithOwner>[] = [
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/events/${row.getValue('id')}`} as="button" className="w-full" method={Method.DELETE}>
+              <Link
+                href={`/events/${row.getValue('id')}`}
+                as="button"
+                className="w-full"
+                method={Method.DELETE}
+                onSuccess={() => {
+                  queryClient.invalidateQueries(['events']);
+                }}
+              >
                 <Trash className="mr-2 h-4 w-4" />
                 <span>Supprimer</span>
               </Link>

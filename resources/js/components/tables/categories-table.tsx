@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Edit, Eye, MoreVertical, Trash } from "lucide-react";
 import { Method } from "@inertiajs/inertia";
 import { CategoryColorLabel } from "@/components/elements/category-color-label";
+import { useQueryClient } from "react-query";
 
 export const columns: ColumnDef<Category>[] = [
   {
@@ -44,6 +45,7 @@ export const columns: ColumnDef<Category>[] = [
   {
     header: "Actions",
     cell: ({ row }) => {
+      const queryClient = useQueryClient();
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -63,7 +65,15 @@ export const columns: ColumnDef<Category>[] = [
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/categories/${row.getValue('id')}`} as="button" className="w-full" method={Method.DELETE}>
+              <Link
+                href={`/categories/${row.getValue('id')}`}
+                as="button"
+                className="w-full"
+                method={Method.DELETE}
+                onSuccess={() => {
+                  queryClient.invalidateQueries(['categories']);
+                }}
+              >
                 <Trash className="mr-2 h-4 w-4" />
                 <span>Supprimer</span>
               </Link>

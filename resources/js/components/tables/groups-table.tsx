@@ -6,6 +6,7 @@ import { Link } from "@inertiajs/react";
 import { Button } from "@/components/ui/button";
 import { Edit, Eye, MoreVertical, Trash } from "lucide-react";
 import { Method } from "@inertiajs/inertia";
+import { useQueryClient } from "react-query";
 
 export const columns: ColumnDef<Group>[] = [
   {
@@ -39,6 +40,7 @@ export const columns: ColumnDef<Group>[] = [
   {
     header: "Actions",
     cell: ({ row }) => {
+      const queryClient = useQueryClient();
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -58,7 +60,15 @@ export const columns: ColumnDef<Group>[] = [
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/groups/${row.getValue('id')}`} as="button" className="w-full" method={Method.DELETE}>
+              <Link
+                href={`/groups/${row.getValue('id')}`}
+                as="button"
+                className="w-full"
+                method={Method.DELETE}
+                onSuccess={() => {
+                  queryClient.invalidateQueries(['groups']);
+                }}
+              >
                 <Trash className="mr-2 h-4 w-4" />
                 <span>Supprimer</span>
               </Link>
