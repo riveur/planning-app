@@ -9,6 +9,8 @@ import { CategoryValidation, CategoryValidationSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Category } from "@/types";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { HexColorPicker } from "react-colorful";
 
 export function CategoryForm({ category }: { category?: Category }) {
   const form = useForm<CategoryValidationSchema>({
@@ -68,10 +70,27 @@ export function CategoryForm({ category }: { category?: Category }) {
                   control={form.control}
                   name="color"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex flex-col">
                       <FormLabel className={cn(form.formState.errors.color && 'font-bold')}>Couleur</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              style={{ backgroundColor: field.value }}
+                              variant="outline"
+                              type="button"
+                              className={cn(
+                                "pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent align="start" className="w-auto">
+                            <HexColorPicker color={field.value} onChange={field.onChange} />
+                          </PopoverContent>
+                        </Popover>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

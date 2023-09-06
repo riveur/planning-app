@@ -71,6 +71,9 @@ dependencies:
   lucide-react:
     specifier: ^0.270.0
     version: 0.270.0(react@18.2.0)
+  react-colorful:
+    specifier: ^5.6.1
+    version: 5.6.1(react-dom@18.2.0)(react@18.2.0)
   react-day-picker:
     specifier: ^8.8.1
     version: 8.8.1(date-fns@2.30.0)(react@18.2.0)
@@ -2511,6 +2514,16 @@ packages:
   /quick-lru@5.1.1:
     resolution: {integrity: sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==}
     engines: {node: '>=10'}
+
+  /react-colorful@5.6.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-1exovf0uGTGyq5mXQT0zgQ80uvj2PCwvF8zY1RN9/vbJVSjSo3fsB/4L3ObbF7u70NduSiK4xu4Y6q1MHoUGEw==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
 
   /react-day-picker@8.8.1(date-fns@2.30.0)(react@18.2.0):
     resolution: {integrity: sha512-U7RsRoRI5pyMXhKq54hS9yM11WEGkPf8hIdrxIM/sefgmQjuxazqgwcZFMiPZW/K9vtmzLZFf9bLW0wVsGYd5w==}
