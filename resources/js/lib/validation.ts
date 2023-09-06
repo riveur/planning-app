@@ -63,6 +63,12 @@ export const StoreEventValidation = EventValidation.extend({
   }),
 });
 
+export const StoreScheduleValidation = z.object({
+  event_id: z.string({ required_error: 'Vous devez choisir un évènement' }).regex(/^\d+$/, 'Valeur invalide').or(z.number()),
+  start_date: z.date(),
+  end_date: z.date()
+});
+
 export const LoginValidation = z.object({
   email: z.string().min(1, 'Vous devez renseigner votre mail').email('Email invalide').max(255),
   password: z.string().min(1, 'Vous devez renseigner votre mot de passe').max(255)
@@ -78,6 +84,7 @@ export type RoleValidationSchema = z.infer<typeof RoleValidation>;
 export type GroupValidationSchema = z.infer<typeof GroupValidation>;
 export type EventValidationSchema = z.infer<typeof EventValidation>;
 export type StoreEventValidationSchema = z.infer<typeof StoreEventValidation>;
+export type StoreScheduleValidationSchema = z.infer<typeof StoreScheduleValidation>;
 export type RegisterValidationSchema = z.infer<typeof RegisterValidation>;
 export type ForgotPasswordValidationSchema = z.infer<typeof ForgotPasswordValidation>;
 export type ResetPasswordValidationSchema = z.infer<typeof ResetPasswordValidation>;

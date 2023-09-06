@@ -48,7 +48,7 @@ class DashboardController extends Controller
 
         return Inertia::render('Home', [
             'schedulesOfDay' => $schedulesOfDay->get(),
-            'incomingSchedules' => $incomingSchedules
+            'incomingSchedules' => $incomingSchedules,
         ]);
     }
 
@@ -57,8 +57,13 @@ class DashboardController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
+        $canAddSchedule = $user->can('create', Schedule::class) ?? false;
+
         return Inertia::render('Calendar', [
             'canEditCalendar' => $user->roleIs('admin'),
+            'canAddSchedule' => $canAddSchedule,
+            'canDeleteSchedule' => $user->roleIs('admin'),
+            'events' => $canAddSchedule ? Event::all(['id', 'title']) : [],
         ]);
     }
 }

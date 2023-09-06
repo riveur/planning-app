@@ -6,9 +6,13 @@ import InteractionPlugin, { EventResizeDoneArg } from "@fullcalendar/interaction
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { format, intervalToDuration } from "date-fns";
-import { CustomContentGenerator, EventContentArg, EventDropArg, EventSourceInput } from "@fullcalendar/core";
+import { CustomContentGenerator, DateSelectArg, EventClickArg, EventContentArg, EventDropArg, EventSourceInput } from "@fullcalendar/core";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
+import { ModalAddSchedule } from "@/components/elements/modal-add-schedule";
+import { Event } from "@/types";
+import { useRef, useState } from "react";
+import { ModalDeleteSchedule } from "@/components/elements/modal-delete-schedule";
 
 export const EventContentRender: CustomContentGenerator<EventContentArg> = (info) => {
   const durations = (info.event.start && info.event.end) ?
@@ -16,14 +20,14 @@ export const EventContentRender: CustomContentGenerator<EventContentArg> = (info
     null;
   return (
     <>
-      <div className="mb-2">
+      <div className="h-full">
         {info.timeText}
         {
           durations !== null &&
           <span className="font-bold">{' '}({`${durations.hours}h${durations.minutes}`})</span>
         }
-      </div >
-      <div className="text-center">{info.event.title}</div>
+        <div className="text-center">{info.event.title}</div>
+      </div>
     </>
   );
 };
@@ -49,7 +53,25 @@ const eventsSource: EventSourceInput = function (info, successCallback, failureC
     });
 }
 
-export default function Calendar({ canEditCalendar }: { canEditCalendar: boolean }) {
+export default function Calendar({
+  canEditCalendar,
+  canAddSchedule,
+  canDeleteSchedule,
+  events
+}: {
+  canEditCalendar: boolean,
+  canAddSchedule: boolean,
+  canDeleteSchedule: boolean,
+  events: Event[]
+}) {
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [alertOpen, setAlertOpen] = useState<boolean>(false);
+  const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(null);
+  const [{ start, end }, setRange] = useState<Pick<DateSelectArg, "start" | "end">>({
+    start: new Date(),
+    end: new Date()
+  });
+  const calendarRef = useRef<FullCalendar>(null);
 
   const { toast } = useToast();
 
@@ -75,6 +97,16 @@ export default function Calendar({ canEditCalendar }: { canEditCalendar: boolean
       });
   }
 
+  const onSelect = (info: DateSelectArg) => {
+    setModalOpen(true);
+    setRange({ start: info.start, end: info.end });
+  }
+
+  const onEventClick = (info: EventClickArg) => {
+    setAlertOpen(true);
+    setSelectedScheduleId(info.event.id);
+  }
+
   return (
     <>
       <Card>
@@ -85,6 +117,7 @@ export default function Calendar({ canEditCalendar }: { canEditCalendar: boolean
         <Separator />
         <CardContent className="pt-3">
           <FullCalendar
+            ref={calendarRef}
             locale={fr}
             plugins={[TimeGridPlugin, InteractionPlugin]}
             allDaySlot={false}
@@ -94,11 +127,36 @@ export default function Calendar({ canEditCalendar }: { canEditCalendar: boolean
             slotMinTime="07:00:00"
             slotMaxTime="18:00:00"
             editable={canEditCalendar}
+            selectable={canEditCalendar}
+            select={onSelect}
             eventDrop={onEventChange}
             eventResize={onEventChange}
+            eventClick={canDeleteSchedule ? onEventClick : undefined}
           />
         </CardContent>
       </Card>
+      {canAddSchedule &&
+        <ModalAddSchedule
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          events={events}
+          startDate={start}
+          endDate={end}
+          onSuccess={() => {
+            setModalOpen(false);
+            calendarRef?.current?.getApi().refetchEvents();
+          }}
+        />}
+      {canDeleteSchedule &&
+        <ModalDeleteSchedule
+          open={alertOpen}
+          onOpenChange={setAlertOpen}
+          eventId={selectedScheduleId}
+          onSuccess={() => {
+            setAlertOpen(false);
+            calendarRef.current?.getApi().refetchEvents();
+          }}
+        />}
     </>
   );
 }

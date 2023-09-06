@@ -4,33 +4,33 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Schedule;
+use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 
 class SchedulesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
-    }
+        $this->authorize('create', Schedule::class);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Schedule $schedule)
-    {
-        //
+        $data = $request->validate([
+            'event_id' => ['required', 'exists:events,id'],
+            'start_date' => ['required', 'date', 'before_or_equal:end_date'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date']
+        ]);
+
+        $schedule = Schedule::create([
+            'event_id' => $data['event_id'],
+            'start_date' => new Carbon($data['start_date']),
+            'end_date' => new Carbon($data['end_date']),
+        ]);
+
+        return response()->json(compact('schedule'), 201);
     }
 
     /**
@@ -66,6 +66,10 @@ class SchedulesController extends Controller
      */
     public function destroy(Schedule $schedule)
     {
-        //
+        $this->authorize('delete', $schedule);
+
+        $schedule->delete();
+
+        return response()->noContent();
     }
 }

@@ -33,5 +33,7 @@ Route::middleware('auth')->group(function () {
         ->name('api.schedules.')
         ->group(function () {
             Route::put('/{schedule}', 'update')->name('update');
+            Route::post('/', 'store')->name('store');
+            Route::delete('/{schedule}', 'destroy')->name('destroy');
         });
 });
