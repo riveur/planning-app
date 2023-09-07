@@ -228,6 +228,7 @@ export function EventForm({
                                   required
                                   selected={field.value}
                                   onSelect={field.onChange}
+                                  classNames={{ day_today: "" }}
                                 />
                               </PopoverContent>
                             </Popover>
@@ -306,6 +307,7 @@ export function EventForm({
                                   selected={field.value}
                                   onSelect={field.onChange}
                                   disabled={(date) => date < form.getValues().start_date}
+                                  classNames={{ day_today: "" }}
                                 />
                               </PopoverContent>
                             </Popover>
