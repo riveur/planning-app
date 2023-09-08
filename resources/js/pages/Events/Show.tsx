@@ -42,10 +42,6 @@ export default function Show({ event }: { event: Event }) {
               <span>{event.title}</span>
             </div>
             <div className="flex flex-col">
-              <h2 className="font-bold">Description</h2>
-              <span>{event.description}</span>
-            </div>
-            <div className="flex flex-col">
               <h2 className="font-bold">Date de création</h2>
               <span>{format(new Date(event.created_at), 'dd/MM/yyyy hh:mm:ss')}</span>
             </div>
