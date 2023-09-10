@@ -40,15 +40,9 @@ class DashboardController extends Controller
             });
         }
 
-        $incomingSchedules = $incomingSchedules->get()
-            ->groupBy([function (Schedule $schedule) {
-                return (new Carbon($schedule->start_date))->toDateString();
-            }])
-            ->all();
-
         return Inertia::render('Home', [
             'schedulesOfDay' => $schedulesOfDay->get(),
-            'incomingSchedules' => $incomingSchedules,
+            'incomingSchedules' => $incomingSchedules->get(),
         ]);
     }
 

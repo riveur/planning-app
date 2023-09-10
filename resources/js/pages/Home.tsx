@@ -1,21 +1,21 @@
 import { useDashboardLayout } from "@/components/layouts/dashboard-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Event, Schedule, WithCategory, WithEvent } from "@/types";
+import { Event, Schedule, WithCategory } from "@/types";
 import FullCalendar from "@fullcalendar/react";
 import fr from "@fullcalendar/core/locales/fr";
 import TimeGridPlugin from "@fullcalendar/timegrid";
-import { EventContentRender } from "./Calendar";
 import { format } from "date-fns";
-import { ScheduleCard } from "@/components/elements/incoming-schedules-card";
+import { IncomingScheduleItem } from "@/components/elements/incoming-schedule-item";
 import { CalendarCheck } from "lucide-react";
+import { CalendarEventRender } from "@/components/elements/calendar-event-render";
 
 export default function Home({
   schedulesOfDay,
   incomingSchedules
 }: {
   schedulesOfDay: (Schedule & { event: Event & WithCategory })[],
-  incomingSchedules: Record<string, (Schedule & { event: Event & WithCategory })[]>
+  incomingSchedules: (Schedule & { event: Event & WithCategory })[]
 }) {
   return (
     <>
@@ -49,7 +49,7 @@ export default function Home({
               }}
               dayCellClassNames="!bg-inherit"
               dayHeaderContent={(cell) => format(cell.date, 'd MMMM yyyy')}
-              eventContent={EventContentRender}
+              eventContent={CalendarEventRender}
               contentHeight="auto"
               slotMinTime="07:00:00"
               slotMaxTime="18:00:00"
@@ -62,11 +62,11 @@ export default function Home({
             <CardDescription>Liste des évènements à venir</CardDescription>
           </CardHeader>
           <Separator />
-          <CardContent className="pt-6">
-            <div className="flex flex-col gap-2">
+          <CardContent className="p-0">
+            <div className="flex flex-col [&>*:last-child]:border-0">
               {
                 Object.keys(incomingSchedules).length === 0 ?
-                  (<Card className="">
+                  (<Card>
                     <CardContent className="pt-6">
                       <div className="flex flex-col justify-center items-center gap-2">
                         <CalendarCheck className="w-8 h-8" />
@@ -74,7 +74,7 @@ export default function Home({
                       </div>
                     </CardContent>
                   </Card>) :
-                  Object.entries(incomingSchedules).map(([date, schedules]) => (<ScheduleCard key={date} date={date} schedules={schedules} />))
+                  incomingSchedules.map((schedule) => (<IncomingScheduleItem key={schedule.id} schedule={schedule} />))
               }
             </div>
           </CardContent>

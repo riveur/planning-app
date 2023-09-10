@@ -5,32 +5,15 @@ import TimeGridPlugin from "@fullcalendar/timegrid";
 import InteractionPlugin, { EventResizeDoneArg } from "@fullcalendar/interaction";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { format, intervalToDuration } from "date-fns";
-import { CustomContentGenerator, DateSelectArg, EventClickArg, EventContentArg, EventDropArg, EventSourceInput } from "@fullcalendar/core";
+import { format } from "date-fns";
+import { DateSelectArg, EventClickArg, EventDropArg, EventSourceInput } from "@fullcalendar/core";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
 import { ModalAddSchedule } from "@/components/elements/modal-add-schedule";
 import { Event } from "@/types";
 import { useRef, useState } from "react";
 import { ModalDeleteSchedule } from "@/components/elements/modal-delete-schedule";
-
-export const EventContentRender: CustomContentGenerator<EventContentArg> = (info) => {
-  const durations = (info.event.start && info.event.end) ?
-    intervalToDuration({ start: info.event.start, end: info.event.end }) :
-    null;
-  return (
-    <>
-      <div className="h-full">
-        {info.timeText}
-        {
-          durations !== null &&
-          <span className="font-bold">{' '}({`${durations.hours}h${durations.minutes}`})</span>
-        }
-        <div className="text-center">{info.event.title}</div>
-      </div>
-    </>
-  );
-};
+import { CalendarEventRender } from "@/components/elements/calendar-event-render";
 
 const eventsSource: EventSourceInput = function (info, successCallback, failureCallback) {
   const urlParams = new URLSearchParams({ start: format(info.start, 'yyyy-MM-dd'), end: format(info.end, 'yyyy-MM-dd') });
@@ -53,7 +36,7 @@ const eventsSource: EventSourceInput = function (info, successCallback, failureC
     });
 }
 
-export default function Calendar({
+export default function Planning({
   canEditCalendar,
   canAddSchedule,
   canDeleteSchedule,
@@ -122,7 +105,7 @@ export default function Calendar({
             plugins={[TimeGridPlugin, InteractionPlugin]}
             allDaySlot={false}
             events={eventsSource}
-            eventContent={EventContentRender}
+            eventContent={CalendarEventRender}
             contentHeight="auto"
             slotMinTime="07:00:00"
             slotMaxTime="18:00:00"
@@ -161,4 +144,4 @@ export default function Calendar({
   );
 }
 
-Calendar.layout = useDashboardLayout('Calendrier');
+Planning.layout = useDashboardLayout('Calendrier');
