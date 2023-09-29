@@ -10,7 +10,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Category, Event, Group, User, WithGroups } from "@/types";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MultiSelect } from "../ui/multi-select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { fr as FrenchDateLocale } from "date-fns/locale";
@@ -175,13 +174,35 @@ export function EventForm({
                   render={({ field }) => (
                     <FormItem className="w-full">
                       <FormLabel>Groupes</FormLabel>
-                      <MultiSelect
-                        onChange={field.onChange}
-                        defaultValue={field.value}
-                        isMulti
-                        placeholder=""
-                        options={mappedGroups}
-                      />
+                      <Select>
+                        <FormControl>
+                          <SelectTrigger>
+                            {field.value.length === 0 ? 'Choisissez un ou plusieurs groupes' : field.value.map(group => group.label).join(', ')}
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {mappedGroups.map((group) => (
+                            <div className="flex gap-1 w-full items-center rounded-sm py-1.5 px-2 text-sm outline-none hover:bg-accent focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
+                              <Checkbox
+                                id={`group-check-${group.value}`}
+                                checked={field.value.find(g => g.value === group.value) !== undefined}
+                                onCheckedChange={(checked) => {
+                                  const target = mappedGroups.find(g => g.value === group.value);
+                                  if (!target) return;
+                                  return checked
+                                    ? field.onChange([...field.value, target])
+                                    : field.onChange(
+                                      field.value?.filter(
+                                        (value) => value.value !== target.value
+                                      )
+                                    )
+                                }}
+                              />
+                              <label className="flex-grow" htmlFor={`group-check-${group.value}`}>{group.label}</label>
+                            </div>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
