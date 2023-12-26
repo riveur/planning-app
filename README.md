@@ -29,6 +29,7 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-6. Run a dev server with `php artisan serve` or use Apache.
-7. Run `npm run dev` or `npm run build` to set up front-end assets
-8. Ready to use
+6. Run `php artisan migrate:fresh` to setup database tables.
+7. Run a dev server with `php artisan serve` or use Apache.
+8. Run `npm run dev` or `npm run build` to set up front-end assets
+9. Ready to use
